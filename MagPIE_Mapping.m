@@ -40,7 +40,7 @@ disp(y_stats)
 
 % Setup priors
 pd = {@priorDelta};     % Fixes hyperparameter
-pg = {@priorGauss, mu_y, sig_y^2};      % Gaussian prior
+pg = {@priorGauss, mu_y, 1};      % Gaussian prior
 
 % Mean function
 % mean = {@meanSum,{@meanConst, @meanLinear}};
@@ -133,13 +133,12 @@ qqplot(develMD,chi2pd)
 
 %% Plot
 
+% Predicted mean with +/- 1 std deviation
 figure(2)
 plot3(x(:,1),x(:,2),y,'.')
 hold on;
 scatter3(xDevel(:,1),xDevel(:,2),m)
 hold on;
-
-pause
 scatter3(xDevel(:,1),xDevel(:,2),m-std)
 hold on;
 scatter3(xDevel(:,1),xDevel(:,2),m+std)
