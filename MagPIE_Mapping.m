@@ -52,20 +52,21 @@ prior.mean = {pg};
 % 
 % Covariance function
 % cov = {@covSEiso};    % Squared exponential covariance function
-% cov = {@covSEard};    % SE with auto relevance detection
-cov = {@covMaternard, 3};
+% cov = {@covSEard};    % SE with auto relevance detection (ARD)
+cov = {@covMaternard, 3};       % Matern kernel with ARD
 hyp.cov = [1e-4; 1e-4; 1e-4; 0.495];
-prior.cov = {pd,pd,pd,pd};  % Fix characteristic length scale
+% prior.cov = {pd,pd,pd,[]};  % Fix characteristic length scale
 
 % Likelihood function
 lik = {@likGauss};        % Gaussian Likelihood Function
-hyp.lik = log(0.1);   % Log of noise std deviation (sigma n)
-% prior.lik = {'priorDelta'};    % Fix noise std deviation hyperparameter
+hyp.lik = log(0.495);   % Log of noise std deviation (sigma n)
+% prior.lik = {pd};    % Fix noise std deviation hyperparameter
 
 %% Sparse approximation for the full GP of the training set
 
 % Subset of Regressors
-nu = floor(5e-4*length(x(:,1)));   % Number of inducing points
+% nu = floor(5e-4*length(x(:,1)));   % Number of inducing points
+nu = 150;
 iu = randperm(length(x(:,1)));
 iu = iu(1:nu);
 u = x(iu,:);
@@ -125,12 +126,21 @@ MD.med = median(develMD);
 
 disp(MD)
 
-% Evaluate quality of predictions by plotting MD against expected Chi
+% Qualitatively evalute of predictions by plotting MD against expected Chi
 % square distribution
 chi2pd = makedist('Gamma','b',2);   % Chi^2 special case of Gamma
 qqplot(develMD,chi2pd)
 % qqplot(testMD,chi2pd)
 
+% Absolute difference between prediction and observation
+
+diffPredict = abs(yDevel - m);
+diff.max = max(diffPredict);
+diff.min = min(diffPredict);
+diff.mean = sum(diffPredict)/length(diffPredict);
+diff.med = median(diffPredict);
+
+disp(diff)
 %% Plot
 
 % Predicted mean with +/- 1 std deviation
@@ -139,6 +149,11 @@ plot3(x(:,1),x(:,2),y,'.')
 hold on;
 scatter3(xDevel(:,1),xDevel(:,2),m)
 hold on;
-scatter3(xDevel(:,1),xDevel(:,2),m-std)
+% scatter3(xDevel(:,1),xDevel(:,2),s2)
+scatter3(xDevel(:,1),xDevel(:,2),m-2*std)
 hold on;
-scatter3(xDevel(:,1),xDevel(:,2),m+std)
+scatter3(xDevel(:,1),xDevel(:,2),m+2*std)
+
+% Difference between predictions and observations
+figure(3)
+scatter3(xDevel(:,1),xDevel(:,2),diffPredict)
