@@ -9,7 +9,7 @@ close all
 
 %% Load Data
 % Absolute path to platform data directory
-addpath('Z:\Desktop\BRG\MagPIE\Data Set\CSL First Floor\UGV')
+addpath('Z:\Desktop\BRG\MagPIE\Data Set\Loomis First Floor\WLK')
 % addpath('\\ad.uillinois.edu\engr\instructional\afausti2\Desktop\BRG\MagPIE\Data Set\Talbot Third Floor\UGV')
 load('GT_Mag.mat')
 load('x.mat')
@@ -52,9 +52,9 @@ prior.mean = {pg};
 % 
 % Covariance function
 % cov = {@covSEiso};    % Squared exponential covariance function
-% cov = {@covSEard};    % SE with auto relevance detection (ARD)
-cov = {@covMaternard, 3};       % Matern kernel with ARD
-hyp.cov = [1e-4; 1e-4; 1e-4; 0.495];
+cov = {{@covSEard},{@covSEard}};    % SE with auto relevance detection (ARD)
+% cov = {@covMaternard, 3};       % Matern kernel with ARD
+hyp.cov = log([1e-4; 0.495; 1e-4; 0.495]);
 % prior.cov = {pd,pd,pd,[]};  % Fix characteristic length scale
 
 % Likelihood function
@@ -70,22 +70,32 @@ nu = 150;
 iu = randperm(length(x(:,1)));
 iu = iu(1:nu);
 u = x(iu,:);
-hyp.xu = u; % Optimize inducing inputs jointly with hyperparameters
+% hyp.xu = u; % Optimize inducing inputs jointly with hyperparameters
+xg = {u(:,1), u(:,2)};    % Plain Kronecker structure
 
-% Sparse covariance function
-covfuncF = {'apxSparse',cov,u};
+% Kernel approximation
+% covfuncF = {'apxSparse',cov,u};
+covg = {'apxGrid',cov,xg};
+opt.cg_maxit = 500;
+opt.cg_tol = 1e-5;
+opt.stat = true;                   % show some more information during inference
+opt.ndcovs = 25;                    % ask for sampling-based (exact) derivatives
 
-% Sparse likelihood function
+% Inference shortcut
 % 0.0 -> VFE, 1.0 -> FITC
-inf = @(varargin) infGaussLik(varargin{:}, struct('s', 1.0));
+% inf = @(varargin) infGaussLik(varargin{:}, struct('s', 1.0));
+inf = @(varargin) infGrid(varargin{:}, opt);
 infP = {@infPrior,inf,prior};
 %% Optimize Hyperparameters
-                                    
+
+% Construct a grid covering the training data
+xg = apxGrid('create',xTrain(:,1:2),true,[nu nu]);
+
 % Compute hyperparameters by minimizing negative log marginal likelihood
 % w.r.t. hyperparameters
 tic 
 disp('Optimizing hyperparameters...')
-hyp = minimize(hyp, @gp, -100, infP, mean, covfuncF, lik, xTrain, yTrain);
+hyp = minimize(hyp, @gp, -100, infP, mean, covg, lik, xTrain(:,1:2), yTrain);
 toc
 
 % Print results to console
@@ -95,21 +105,31 @@ mu_inf = sprintf('Inferred Mean is: %.4f', hyp.mean);
 disp(mu_inf)
 l_inf = sprintf('Inferred characteristic length scale is: %.4e', hyp.cov(1));
 disp(l_inf)
-sig_inf = sprintf('Inferred signal standard deviation is: %.4f', hyp.cov(4));
+sig_inf = sprintf('Inferred signal standard deviation is: %.4f', hyp.cov(3));
 disp(sig_inf)
-nlml = gp(hyp, infP, mean, covfuncF, lik, xTrain, yTrain);
+nlml = gp(hyp, infP, mean, covg, lik, xTrain(:,1:2), yTrain);
 nlml_x = sprintf('Negative log probability of training data: %.6e', nlml);
 disp(nlml_x)
 
 %% Predict values for test data
 
+% Construct grid of test data
+[xs,ns] = apxGrid('expand',xDevel(:,1:2));
+
+% Run inference
+disp('Running inference...')
+tic 
+[post,nlZ,dnlZ] = infGrid(hyp, mean, covg, lik, xTrain(:,1:2), yTrain, opt);
+toc
+
 tic
 disp('Predicting mean and variance for test data...')
-[m, s2] = gp(hyp, infP, mean, covfuncF, lik, xTrain, yTrain, xDevel);
+[fmu,fs2,ymu,ys2] = post.predict(xs);
+% [m, s2] = gp(hyp, infP, mean, covg, lik, xTrain, yTrain, xDevel);
 % [m, s2] = gp(hyp, inf, mean, covfuncF, lik, xTrain, yTrain, xTest);
 toc
 
-std = s2.^(1/2);
+std = ys2.^(1/2);
 %% Determine Mahalanobis Distance Between Predictions and Full Data
 
 develMD = mahal([xDevel m],[x y]);
