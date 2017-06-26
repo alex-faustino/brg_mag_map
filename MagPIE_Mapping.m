@@ -9,7 +9,7 @@ close all
 
 %% Load Data
 % Absolute path to platform data directory
-addpath('Z:\Desktop\BRG\MagPIE\Data Set\CSL First Floor\UGV')
+addpath('Z:\Desktop\BRG\MagPIE\Data Set\Loomis First Floor\WLK')
 % addpath('\\ad.uillinois.edu\engr\instructional\afausti2\Desktop\BRG\MagPIE\Data Set\Talbot Third Floor\UGV')
 load('GT_Mag.mat')
 load('x.mat')
@@ -85,7 +85,7 @@ infP = {@infPrior,inf,prior};
 % w.r.t. hyperparameters
 tic 
 disp('Optimizing hyperparameters...')
-hyp = minimize(hyp, @gp, -100, infP, mean, covfuncF, lik, xTrain, yTrain);
+hyp = minimize(hyp,@gp,-100,infP,mean,covfuncF,lik,xTrain,yTrain);
 toc
 
 % Print results to console
@@ -95,16 +95,24 @@ mu_inf = sprintf('Inferred Mean is: %.4f', hyp.mean);
 disp(mu_inf)
 l_inf = sprintf('Inferred characteristic length scale is: %.4e', hyp.cov(1));
 disp(l_inf)
-sig_inf = sprintf('Inferred signal standard deviation is: %.4f', hyp.cov(4));
+sig_inf = sprintf('Inferred signal standard deviation is: %.4f', hyp.cov(3));
 disp(sig_inf)
-nlml = gp(hyp, infP, mean, covfuncF, lik, xTrain, yTrain);
+nlml = gp(hyp,infP,mean,covfuncF,lik,xTrain,yTrain);
 nlml_x = sprintf('Negative log probability of training data: %.6e', nlml);
 disp(nlml_x)
 
 %% Predict values for test data
 
+% Run inference
+tic
+disp('Running inference...')
+[post,nlZ,dnlZ] = infGaussLik(hyp,mean,covfuncF,lik,xTrain,yTrain);
+toc
+
+% Predict values for test data
 tic
 disp('Predicting mean and variance for test data...')
+% [fmu,fs2,ymu,ys2] = post.predict(xDevel);
 [m, s2] = gp(hyp, infP, mean, covfuncF, lik, xTrain, yTrain, xDevel);
 % [m, s2] = gp(hyp, inf, mean, covfuncF, lik, xTrain, yTrain, xTest);
 toc
