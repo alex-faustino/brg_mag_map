@@ -88,24 +88,43 @@ inf = @(varargin) infGrid(varargin{:}, opt);
 infP = {@infPrior,inf,prior};
 %% Optimize Hyperparameters
 
-% Construct a grid covering the training data
-xg = apxGrid('create',xTrain(:,1:2),true,[nu nu]);
+% Loop control
+equalSourcePoints = true;
+jitter = 0;
 
-% Compute hyperparameters by minimizing negative log marginal likelihood
-% w.r.t. hyperparameters
-tic 
-disp('Optimizing hyperparameters...')
-hyp = minimize(hyp, @gp, -100, infP, mean, covg, lik, xTrain(:,1:2), yTrain);
-toc
+while(equalSourcePoints)
+    try
+        % Construct a grid covering the training data
+        xg = apxGrid('create',xTrain(:,1:2),true,[nu nu+(2*jitter+1)]);
+
+        % Compute hyperparameters by minimizing negative log marginal likelihood
+        % w.r.t. hyperparameters
+        tic 
+        disp('Optimizing hyperparameters...')
+        hyp = minimize(hyp, @gp, -100, infP, mean, covg, lik, xTrain(:,1:2), yTrain);
+        toc
+        
+        % Catch warning from apxGrid
+        warnstr = 'Inference method failed [Error using apxGrid>neqinterp (line 552) Some source points are equal.] .. attempting to continue';
+        msgstr = lastwarn;
+        if (strcmp(msgstr,warnstr))
+            error('Equal source point error. ')
+        end
+        equalSourcePoints = false;
+    catch ME
+        disp('Attempting with different source points')
+        jitter = jitter + 1;
+    end
+end
 
 % Print results to console
 sig_n = sprintf('Inferred noise standard deviation is: %.4f', exp(hyp.lik));
 disp(sig_n)
 mu_inf = sprintf('Inferred Mean is: %.4f', hyp.mean);
 disp(mu_inf)
-l_inf = sprintf('Inferred characteristic length scale is: %.4e', hyp.cov(1));
+l_inf = sprintf('Inferred characteristic length scale is: %.4e', exp(hyp.cov(1)));
 disp(l_inf)
-sig_inf = sprintf('Inferred signal standard deviation is: %.4f', hyp.cov(3));
+sig_inf = sprintf('Inferred signal standard deviation is: %.4f', exp(hyp.cov(3)));
 disp(sig_inf)
 nlml = gp(hyp, infP, mean, covg, lik, xTrain(:,1:2), yTrain);
 nlml_x = sprintf('Negative log probability of training data: %.6e', nlml);
@@ -132,7 +151,7 @@ toc
 std = ys2.^(1/2);
 %% Determine Mahalanobis Distance Between Predictions and Full Data
 
-develMD = mahal([xDevel m],[x y]);
+develMD = mahal([xDevel(:,1:2) ymu],[x(:,1:2) y]);
 MD.max = max(develMD);
 MD.min = min(develMD);
 MD.mean = sum(develMD)/length(develMD);
@@ -154,7 +173,7 @@ qqplot(develMD,chi2pd)
 
 % Absolute difference between prediction and observation
 
-diffPredict = abs(yDevel - m);
+diffPredict = abs(yDevel - ymu);
 diff.max = max(diffPredict);
 diff.min = min(diffPredict);
 diff.mean = sum(diffPredict)/length(diffPredict);
@@ -167,12 +186,12 @@ disp(diff)
 figure(2)
 plot3(x(:,1),x(:,2),y,'.')
 hold on;
-scatter3(xDevel(:,1),xDevel(:,2),m)
+scatter3(xDevel(:,1),xDevel(:,2),ymu)
 hold on;
 % scatter3(xDevel(:,1),xDevel(:,2),s2)
-scatter3(xDevel(:,1),xDevel(:,2),m-2*std)
+scatter3(xDevel(:,1),xDevel(:,2),ymu-2*std)
 hold on;
-scatter3(xDevel(:,1),xDevel(:,2),m+2*std)
+scatter3(xDevel(:,1),xDevel(:,2),ymu+2*std)
 
 % Difference between predictions and observations
 figure(3)
