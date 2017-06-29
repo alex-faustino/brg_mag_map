@@ -9,7 +9,7 @@ close all
 
 %% Load Data
 % Absolute path to platform data directory
-addpath('Z:\Desktop\BRG\MagPIE\Data Set\Talbot Third Floor\UGV')
+addpath('Z:\Desktop\BRG\MagPIE\Data Set\Loomis First Floor\UGV')
 % addpath('\\ad.uillinois.edu\engr\instructional\afausti2\Desktop\BRG\MagPIE\Data Set\Talbot Third Floor\UGV')
 load('GT_Mag.mat'), load('x.mat'), load('y.mat'), load('xTrain.mat')
 load('yTrain.mat'), load('xDevel.mat'), load('yDevel.mat'), load('xTest.mat')
