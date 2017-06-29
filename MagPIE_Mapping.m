@@ -9,16 +9,10 @@ close all
 
 %% Load Data
 % Absolute path to platform data directory
-addpath('Z:\Desktop\BRG\MagPIE\Data Set\Loomis First Floor\WLK')
+addpath('Z:\Desktop\BRG\MagPIE\Data Set\Talbot Third Floor\UGV')
 % addpath('\\ad.uillinois.edu\engr\instructional\afausti2\Desktop\BRG\MagPIE\Data Set\Talbot Third Floor\UGV')
-load('GT_Mag.mat')
-load('x.mat')
-load('y.mat')
-load('xTrain.mat')
-load('yTrain.mat')
-load('xDevel.mat')
-load('yDevel.mat')
-load('xTest.mat')
+load('GT_Mag.mat'), load('x.mat'), load('y.mat'), load('xTrain.mat')
+load('yTrain.mat'), load('xDevel.mat'), load('yDevel.mat'), load('xTest.mat')
 load('yTest.mat')
 
 % Absolute path for GPML matlab directory
@@ -64,33 +58,76 @@ hyp.lik = log(0.495);   % Log of noise std deviation (sigma n)
 
 %% Sparse approximation for the full GP of the training set
 
-% Subset of Regressors
-% nu = floor(5e-4*length(x(:,1)));   % Number of inducing points
-nu = 150;
-iu = randperm(length(x(:,1)));
-iu = iu(1:nu);
-u = x(iu,:);
-% hyp.xu = u; % Optimize inducing inputs jointly with hyperparameters
-xg = {u(:,1), u(:,2)};    % Plain Kronecker structure
+equalSourcePointError = true;
+while(equalSourcePointError)
+    try
+        % Subset of Regressors
+        % nu = floor(5e-4*length(x(:,1)));   % Number of inducing points
+        nu = 150;
+        iu = randperm(length(x(:,1)));
+        iu = iu(1:nu);
+        u = x(iu,:);
+        % hyp.xu = u; % Optimize inducing inputs jointly with hyperparameters
+        xg = {u(:,1), u(:,2)};    % Plain Kronecker structure
 
-% Kernel approximation
-% covfuncF = {'apxSparse',cov,u};
-covg = {'apxGrid',cov,xg};
-opt.cg_maxit = 500;
-opt.cg_tol = 1e-5;
-opt.stat = true;                   % show some more information during inference
-opt.ndcovs = 25;                    % ask for sampling-based (exact) derivatives
+        % Kernel approximation
+        % covfuncF = {'apxSparse',cov,u};
+        covg = {'apxGrid',cov,xg};
+        opt.cg_maxit = 500;
+        opt.cg_tol = 1e-5;
+        opt.stat = true;                   % show some more information during inference
+        opt.ndcovs = 25;                    % ask for sampling-based (exact) derivatives
 
-% Inference shortcut
-% 0.0 -> VFE, 1.0 -> FITC
-% inf = @(varargin) infGaussLik(varargin{:}, struct('s', 1.0));
-inf = @(varargin) infGrid(varargin{:}, opt);
-infP = {@infPrior,inf,prior};
-%% Optimize Hyperparameters
+        % Inference shortcut
+        % 0.0 -> VFE, 1.0 -> FITC
+        % inf = @(varargin) infGaussLik(varargin{:}, struct('s', 1.0));
+        inf = @(varargin) infGrid(varargin{:}, opt);
+        infP = {@infPrior,inf,prior};
+
+        % Flatten grid xg
+        if ~iscell(xg)      % Trivial case
+            xf = xg;
+        end
+        xf = cell(1,0);
+        for i=1:numel(xg)
+            temp = xg{i};
+            if iscell(x)
+                xf = [xf, temp];
+            else
+                xf = [xf,{temp}];
+            end
+        end
+
+        % Check for equal source points along dimensions
+        p = numel(xf);
+        Dg = zeros(p,1);
+        ng = zeros(p,1);
+
+        for j=1:p
+            [ng(i), Dg(i)] = size(xf{i});
+        end
+
+        for k=1:p
+            d = sum(Dg(1:k-1))+(1:Dg(k));
+            xt = xf{i};
+            it = find(abs(xt(2,:)-xt(1,:)));
+            [s, ord] = sort(xt(:,it));
+            ds = diff(s);
+            if min(ds)<1e-10
+                error('Some source points are equal.')
+            end
+        end
+        equalSourcePointError = false;
+    catch ME
+        disp('Equal source point error. Attempting new subset...')
+    end
+end
+
+%% Optimize Hyperparameters 
 
 % Construct a grid covering the training data
 xg = apxGrid('create',xTrain(:,1:2),true,[nu nu]);
-
+    
 % Compute hyperparameters by minimizing negative log marginal likelihood
 % w.r.t. hyperparameters
 tic 
@@ -132,7 +169,7 @@ toc
 std = ys2.^(1/2);
 %% Determine Mahalanobis Distance Between Predictions and Full Data
 
-develMD = mahal([xDevel m],[x y]);
+develMD = mahal([xDevel ymu],[x y]);
 MD.max = max(develMD);
 MD.min = min(develMD);
 MD.mean = sum(develMD)/length(develMD);
@@ -152,9 +189,9 @@ chi2pd = makedist('Gamma','b',2);   % Chi^2 special case of Gamma
 qqplot(develMD,chi2pd)
 % qqplot(testMD,chi2pd)
 
-% Absolute difference between prediction and observation
+% Relative error between prediction and observation
 
-diffPredict = abs(yDevel - m);
+diffPredict = abs(yDevel - ymu)./yDevel;
 diff.max = max(diffPredict);
 diff.min = min(diffPredict);
 diff.mean = sum(diffPredict)/length(diffPredict);
@@ -167,12 +204,12 @@ disp(diff)
 figure(2)
 plot3(x(:,1),x(:,2),y,'.')
 hold on;
-scatter3(xDevel(:,1),xDevel(:,2),m)
+scatter3(xDevel(:,1),xDevel(:,2),ymu)
 hold on;
 % scatter3(xDevel(:,1),xDevel(:,2),s2)
-scatter3(xDevel(:,1),xDevel(:,2),m-2*std)
+scatter3(xDevel(:,1),xDevel(:,2),ymu-2*std)
 hold on;
-scatter3(xDevel(:,1),xDevel(:,2),m+2*std)
+scatter3(xDevel(:,1),xDevel(:,2),ymu+2*std)
 
 % Difference between predictions and observations
 figure(3)
