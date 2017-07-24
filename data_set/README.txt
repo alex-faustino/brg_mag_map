@@ -12,28 +12,31 @@ By: David Hanley, Alexander B. Faustino, Scott D. Zelman, David A. Degenhardt, a
 
 Please send bug reports to David Hanley at hanley6@illinois.edu
 
+* - Moto Z frame
+** - Tango frame wrt World frame
+*** - Moto Z frame wrt World frame
 --------------------------------------
-Output_accel Format
+Output_accel Format*
 --------------------------------------
 Time (s)	accelerometer_x (m/s^2)	accelerometer_y (m/s^2)	accelerometer_z (m/s^2)
 
 --------------------------------------
-Output_gyro Format
+Output_gyro Format*
 --------------------------------------
 Time (s)	gyro_x (rad/s)	gyro_y (rad/s)	gyro_z (rad/s)
 
 --------------------------------------
-Output_gt Format
+Output_gt Format**
 --------------------------------------
 Time (s)	position_x (m)	position_y (m)	position_z (m) quat_x	quat_y	quat_z	quat_w
 
 --------------------------------------
-Output_mag Format
+Output_mag Format*
 --------------------------------------
 Time (s)	magnetometer_x (muT)	magnetometer_y (muT)	magnetometer_z (muT)
 
 --------------------------------------
-Initial_DCM Format
+Initial_DCM Format***
 --------------------------------------
 
 	C(1,1)	C(1,2)	C(1,3)
@@ -41,7 +44,7 @@ DCM =	C(2,1)	C(2,2)	C(2,3)
 	C(3,1)	C(3,2)	C(3,3)
 
 --------------------------------------
-Rotations Between Output_mag Frame and Tango Frame
+Moto Z Frame wrt Tango Frame
 --------------------------------------
 
             1             0               0
