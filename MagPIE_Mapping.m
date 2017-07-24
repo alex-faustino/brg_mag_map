@@ -232,5 +232,8 @@ scatter3(xDevel(:,1),xDevel(:,2),ymu+2*ys)
 figure(3)
 scatter3(xDevel(:,1),xDevel(:,2),diffPredict)
 
+if (l < numCVSets)
+    pause
+end
 % End CV loop
 end

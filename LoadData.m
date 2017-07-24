@@ -7,7 +7,7 @@ switch initOptions.env
     case {'C', 'c'}
         switch initOptions.plat
             case {'U', 'u'}
-                addpath('Data Set\CSL First Floor\UGV')
+                addpath('data_set\csl\ugv')
                 switch initOptions.meas
                     case {'N', 'n'}
                         load('x.mat'), load('y_norm.mat'), 
@@ -33,7 +33,7 @@ switch initOptions.env
                         error('Invalid measurement type')
                 end
             case {'S', 's'}
-                addpath('Data Set\CSL First Floor\WLK')
+                addpath('data_set\csl\wlk')
                 switch initOptions.meas
                     case {'N', 'n'}
                         load('x.mat'), load('y_norm.mat'), 
@@ -64,7 +64,7 @@ switch initOptions.env
     case {'L', 'l'}
         switch initOptions.plat
             case {'U', 'u'}
-                addpath('Data Set\Loomis First Floor\UGV')
+                addpath('data_set\loomis\ugv')
                 switch initOptions.meas
                     case {'N', 'n'}
                         load('x.mat'), load('y_norm.mat'), 
@@ -90,7 +90,7 @@ switch initOptions.env
                         error('Invalid measurement type')
                 end
             case {'S', 's'}
-                addpath('Data Set\Loomis First Floor\WLK')
+                addpath('data_set\loomis\wlk')
                 switch initOptions.meas
                     case {'N', 'n'}
                         load('x.mat'), load('y_norm.mat'), 
@@ -121,7 +121,7 @@ switch initOptions.env
     case {'T', 't'}
         switch initOptions.plat
             case {'U', 'u'}
-                addpath('Data Set\Talbot Third Floor\UGV')
+                addpath('data_set\talbot\ugv')
                 switch initOptions.meas
                     case {'N', 'n'}
                         load('x.mat'), load('y_norm.mat'), 
@@ -147,7 +147,7 @@ switch initOptions.env
                         error('Invalid measurement type')
                 end
             case {'S', 's'}
-                addpath('Data Set\Talbot Third Floor\WLK')
+                addpath('data_set\talbot\wlk')
                 switch initOptions.meas
                     case {'N', 'n'}
                         load('x.mat'), load('y_norm.mat'), 

@@ -6,13 +6,48 @@
 % meters) and a y vector containing the selected magnetometer
 % measurement (in micro Tesla) taken at that position.
 % 
-% Run in same directory where GT_Mag.mat is located.
+% Run in MagPIE tools directory.
 % 
 % Written by Alex Faustino
 
-load('GT_Mag.mat')
+cd ../..
 
-platform = input('(U)gv or (S)martphone: ','s');
+env = input('Select mapping environment. (C)SL first floor, (L)oomis Lab first floor, or (T)albot Lab third floor: ','s');
+plat = input('(U)gv or (S)martphone: ','s');
+
+switch env
+    case {'C', 'c'}
+        switch plat
+            case {'U', 'u'}
+                cd('data_set\csl\ugv')
+            case {'S', 's'}
+                cd('data_set\csl\wlk')
+            otherwise
+                error('Invalid platform type')
+        end
+    case {'L', 'l'}
+        switch plat
+            case {'U', 'u'}
+                cd('data_set\loomis\ugv')
+            case {'S', 's'}
+                cd('data_set\loomis\wlk')
+            otherwise
+                error('Invalid platform type')
+        end
+    case {'T', 't'}
+        switch plat
+            case {'U', 'u'}
+                cd('data_set\talbot\ugv')
+            case {'S', 's'}
+                cd('data_set\talbot\wlk')
+            otherwise
+                error('Invalid platform type')
+        end
+    otherwise
+        error('Invalid environment')
+end
+
+load('GT_Mag.mat')
 
 % Transform measurements to proper frame
 x = GT_Mag(:,1:3);
@@ -31,7 +66,7 @@ RA_T = [1  0  0;
     
 for i = 1:length(GT_Mag(:,1))
     DCM = quat2dcm([GT_Mag(i,7), GT_Mag(i,4:6)]);
-    switch platform
+    switch plat
         case {'S','s'}
             mag(:,i) = DCM*RAstar_A*GT_Mag(i,8:10)';
         case {'U','u'}
