@@ -10,24 +10,24 @@ switch initOptions.env
                 addpath('data_set\csl\ugv')
                 switch initOptions.meas
                     case {'N', 'n'}
-                        load('x.mat'), load('y_norm.mat'), 
+                        load('GT_Mag.mat'), load('y_norm.mat'), 
                         load('xTrain_norm.mat'), load('yTrain_norm.mat')
-                        x = x; y = y; 
+                        x = GT_Mag(:,1:3); y = y; 
                         xTrain = xTrain; yTrain = yTrain;
                     case {'X', 'x'}
-                        load('x.mat'), load('y_xdir.mat'), 
+                        load('GT_Mag.mat'), load('y_xdir.mat'), 
                         load('xTrain_xdir.mat'), load('yTrain_xdir.mat')
-                        x = x; y = y; 
+                        x = GT_Mag(:,1:3); y = y; 
                         xTrain = xTrain; yTrain = yTrain;
                     case {'Y', 'y'}
-                        load('x.mat'), load('y_ydir.mat'), 
+                        load('GT_Mag.mat'), load('y_ydir.mat'), 
                         load('xTrain_ydir.mat'), load('yTrain_ydir.mat')
-                        x = x; y = y; 
+                        x = GT_Mag(:,1:3); y = y; 
                         xTrain = xTrain; yTrain = yTrain;
                     case {'Z', 'z'}
-                        load('x.mat'), load('y_zdir.mat'), 
+                        load('GT_Mag.mat'), load('y_zdir.mat'), 
                         load('xTrain_zdir.mat'), load('yTrain_zdir.mat')
-                        x = x; y = y; 
+                        x = GT_Mag(:,1:3); y = y; 
                         xTrain = xTrain; yTrain = yTrain;
                     otherwise
                         error('Invalid measurement type')
@@ -36,24 +36,24 @@ switch initOptions.env
                 addpath('data_set\csl\wlk')
                 switch initOptions.meas
                     case {'N', 'n'}
-                        load('x.mat'), load('y_norm.mat'), 
+                        load('GT_Mag.mat'), load('y_norm.mat'), 
                         load('xTrain_norm.mat'), load('yTrain_norm.mat')
-                        x = x; y = y; 
+                        x = GT_Mag(:,1:3); y = y; 
                         xTrain = xTrain; yTrain = yTrain;
                     case {'X', 'x'}
-                        load('x.mat'), load('y_xdir.mat'), 
+                        load('GT_Mag.mat'), load('y_xdir.mat'), 
                         load('xTrain_xdir.mat'), load('yTrain_xdir.mat')
-                        x = x; y = y; 
+                        x = GT_Mag(:,1:3); y = y; 
                         xTrain = xTrain; yTrain = yTrain;
                     case {'Y', 'y'}
-                        load('x.mat'), load('y_ydir.mat'), 
+                        load('GT_Mag.mat'), load('y_ydir.mat'), 
                         load('xTrain_ydir.mat'), load('yTrain_ydir.mat')
-                        x = x; y = y; 
+                        x = GT_Mag(:,1:3); y = y; 
                         xTrain = xTrain; yTrain = yTrain;
                     case {'Z', 'z'}
-                        load('x.mat'), load('y_zdir.mat'), 
+                        load('GT_Mag.mat'), load('y_zdir.mat'), 
                         load('xTrain_zdir.mat'), load('yTrain_zdir.mat')
-                        x = x; y = y; 
+                        x = GT_Mag(:,1:3); y = y; 
                         xTrain = xTrain; yTrain = yTrain;
                     otherwise
                         error('Invalid measurement type')
@@ -67,24 +67,24 @@ switch initOptions.env
                 addpath('data_set\loomis\ugv')
                 switch initOptions.meas
                     case {'N', 'n'}
-                        load('x.mat'), load('y_norm.mat'), 
+                        load('GT_Mag.mat'), load('y_norm.mat'), 
                         load('xTrain_norm.mat'), load('yTrain_norm.mat')
-                        x = x; y = y; 
+                        x = GT_Mag(:,1:3); y = y; 
                         xTrain = xTrain; yTrain = yTrain;
                     case {'X', 'x'}
-                        load('x.mat'), load('y_xdir.mat'), 
+                        load('GT_Mag.mat'), load('y_xdir.mat'), 
                         load('xTrain_xdir.mat'), load('yTrain_xdir.mat')
-                        x = x; y = y; 
+                        x = GT_Mag(:,1:3); y = y; 
                         xTrain = xTrain; yTrain = yTrain;
                     case {'Y', 'y'}
-                        load('x.mat'), load('y_ydir.mat'), 
+                        load('GT_Mag.mat'), load('y_ydir.mat'), 
                         load('xTrain_ydir.mat'), load('yTrain_ydir.mat')
-                        x = x; y = y; 
+                        x = GT_Mag(:,1:3); y = y; 
                         xTrain = xTrain; yTrain = yTrain;
                     case {'Z', 'z'}
-                        load('x.mat'), load('y_zdir.mat'), 
+                        load('GT_Mag.mat'), load('y_zdir.mat'), 
                         load('xTrain_zdir.mat'), load('yTrain_zdir.mat')
-                        x = x; y = y; 
+                        x = GT_Mag(:,1:3); y = y; 
                         xTrain = xTrain; yTrain = yTrain;
                     otherwise
                         error('Invalid measurement type')
@@ -93,24 +93,24 @@ switch initOptions.env
                 addpath('data_set\loomis\wlk')
                 switch initOptions.meas
                     case {'N', 'n'}
-                        load('x.mat'), load('y_norm.mat'), 
+                        load('GT_Mag.mat'), load('y_norm.mat'), 
                         load('xTrain_norm.mat'), load('yTrain_norm.mat')
-                        x = x; y = y; 
+                        x = GT_Mag(:,1:3); y = y; 
                         xTrain = xTrain; yTrain = yTrain;
                     case {'X', 'x'}
-                        load('x.mat'), load('y_xdir.mat'), 
+                        load('GT_Mag.mat'), load('y_xdir.mat'), 
                         load('xTrain_xdir.mat'), load('yTrain_xdir.mat')
-                        x = x; y = y; 
+                        x = GT_Mag(:,1:3); y = y; 
                         xTrain = xTrain; yTrain = yTrain;
                     case {'Y', 'y'}
-                        load('x.mat'), load('y_ydir.mat'), 
+                        load('GT_Mag.mat'), load('y_ydir.mat'), 
                         load('xTrain_ydir.mat'), load('yTrain_ydir.mat')
-                        x = x; y = y; 
+                        x = GT_Mag(:,1:3); y = y; 
                         xTrain = xTrain; yTrain = yTrain;
                     case {'Z', 'z'}
-                        load('x.mat'), load('y_zdir.mat'), 
+                        load('GT_Mag.mat'), load('y_zdir.mat'), 
                         load('xTrain_zdir.mat'), load('yTrain_zdir.mat')
-                        x = x; y = y; 
+                        x = GT_Mag(:,1:3); y = y; 
                         xTrain = xTrain; yTrain = yTrain;
                     otherwise
                         error('Invalid measurement type')
@@ -124,24 +124,24 @@ switch initOptions.env
                 addpath('data_set\talbot\ugv')
                 switch initOptions.meas
                     case {'N', 'n'}
-                        load('x.mat'), load('y_norm.mat'), 
+                        load('GT_Mag.mat'), load('y_norm.mat'), 
                         load('xTrain_norm.mat'), load('yTrain_norm.mat')
-                        x = x; y = y; 
+                        x = GT_Mag(:,1:3); y = y; 
                         xTrain = xTrain; yTrain = yTrain;
                     case {'X', 'x'}
-                        load('x.mat'), load('y_xdir.mat'), 
+                        load('GT_Mag.mat'), load('y_xdir.mat'), 
                         load('xTrain_xdir.mat'), load('yTrain_xdir.mat')
-                        x = x; y = y; 
+                        x = GT_Mag(:,1:3); y = y; 
                         xTrain = xTrain; yTrain = yTrain;
                     case {'Y', 'y'}
-                        load('x.mat'), load('y_ydir.mat'), 
+                        load('GT_Mag.mat'), load('y_ydir.mat'), 
                         load('xTrain_ydir.mat'), load('yTrain_ydir.mat')
-                        x = x; y = y; 
+                        x = GT_Mag(:,1:3); y = y; 
                         xTrain = xTrain; yTrain = yTrain;
                     case {'Z', 'z'}
-                        load('x.mat'), load('y_zdir.mat'), 
+                        load('GT_Mag.mat'), load('y_zdir.mat'), 
                         load('xTrain_zdir.mat'), load('yTrain_zdir.mat')
-                        x = x; y = y; 
+                        x = GT_Mag(:,1:3); y = y; 
                         xTrain = xTrain; yTrain = yTrain;
                     otherwise
                         error('Invalid measurement type')
@@ -150,24 +150,24 @@ switch initOptions.env
                 addpath('data_set\talbot\wlk')
                 switch initOptions.meas
                     case {'N', 'n'}
-                        load('x.mat'), load('y_norm.mat'), 
+                        load('GT_Mag.mat'), load('y_norm.mat'), 
                         load('xTrain_norm.mat'), load('yTrain_norm.mat')
-                        x = x; y = y; 
+                        x = GT_Mag(:,1:3); y = y; 
                         xTrain = xTrain; yTrain = yTrain;
                     case {'X', 'x'}
-                        load('x.mat'), load('y_xdir.mat'), 
+                        load('GT_Mag.mat'), load('y_xdir.mat'), 
                         load('xTrain_xdir.mat'), load('yTrain_xdir.mat')
-                        x = x; y = y; 
+                        x = GT_Mag(:,1:3); y = y; 
                         xTrain = xTrain; yTrain = yTrain;
                     case {'Y', 'y'}
-                        load('x.mat'), load('y_ydir.mat'), 
+                        load('GT_Mag.mat'), load('y_ydir.mat'), 
                         load('xTrain_ydir.mat'), load('yTrain_ydir.mat')
-                        x = x; y = y; 
+                        x = GT_Mag(:,1:3); y = y; 
                         xTrain = xTrain; yTrain = yTrain;
                     case {'Z', 'z'}
-                        load('x.mat'), load('y_zdir.mat'), 
+                        load('GT_Mag.mat'), load('y_zdir.mat'), 
                         load('xTrain_zdir.mat'), load('yTrain_zdir.mat')
-                        x = x; y = y; 
+                        x = GT_Mag(:,1:3); y = y; 
                         xTrain = xTrain; yTrain = yTrain;
                     otherwise
                         error('Invalid measurement type')
