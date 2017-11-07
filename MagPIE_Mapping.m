@@ -7,8 +7,11 @@
 
 initOptions.env = input('Select mapping environment. (C)SL first floor, (L)oomis Lab first floor, or (T)albot Lab third floor: ','s');
 initOptions.plat = input('Select platform. (U)GV or (S)marthphone: ','s');
-initOptions.meas = input('Select type of magnetometer measurement. (N)orm, (x) component, (y) component, or (z) component: ','s');
+initOptions.meas = 'n'; %input('Select type of magnetometer measurement. (N)orm, (x) component, (y) component, or (z) component: ','s');
 
+% Number of inducing points
+nu = input('Number of inducing points: ');
+    
 [x, y, xTrainFull, yTrainFull] = LoadData(initOptions);
 
 % Absolute path for GPML matlab directory
@@ -78,29 +81,17 @@ for l=1:numCVSets
     % Likelihood function
     lik = {@likGauss};        % Gaussian Likelihood Function
 
-    % Hyperparameters for cov and lik depending on target type
-    switch initOptions.meas
-        case {'N','n'}
-            hyp.lik = log(0.495);   % Log of noise std deviation (sigma n)
-            hyp.cov = log([1e-1; 1e-1; 1e-1; sig_y]);
-        case {'X','x'}
-            hyp.lik = log(0.4217);
-            hyp.cov = log([1e-4; 1; 1e-4; 0.4217]);
-        case {'Y','y'}
-            hyp.lik = log(0.5206);
-            hyp.cov = log([1e-4; 1; 1e-4; 0.5206]);
-        case {'Z','z'}
-            hyp.lik = log(0.3320);
-            hyp.cov = log([1e-4; 1; 1e-4; 0.3320]);
-    end
+    % Hyperparameters for cov and lik
+    hyp.lik = log(0.495);   % Log of noise std deviation (sigma n)
+    hyp.cov = log([1e-1; 1e-1; 1e-1; sig_y]);
+    
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     % Sparse approximation for the full GP of the training set
-
+    
     equalSourcePointError = true;
     while(equalSourcePointError)
         try
             % Subset of Regressors
-            nu = 250;   % Number of inducing points
             iu = randperm(length(xTrain(:,1)));
             iu = iu(1:nu);
             u = x(iu,:);
@@ -148,7 +139,7 @@ for l=1:numCVSets
     disp(mu_inf)
     l_inf = sprintf('Inferred characteristic length scale is: %.4e', exp(hyp.cov(1)));
     disp(l_inf)
-    sig_inf = sprintf('Inferred signal standard deviation is: %.4f', exp(hyp.cov(4)));
+    sig_inf = sprintf('Inferred signal standard deviation is: %.4f', exp(hyp.cov(2)));
     disp(sig_inf)
     nlml = gp(hyp, infP, mean, covg, lik, xTrain(:,1:2), yTrain);
     nlml_x = sprintf('Negative log probability of training data: %.6e', nlml);
